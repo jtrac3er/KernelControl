@@ -1,0 +1,87 @@
+;
+; KernelControl.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=KernelControl.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+PnpLockDown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+KernelControl_Device_CoInstaller_CopyFiles = 11
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+KernelControl.sys  = 1,,
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%KernelControl.DeviceDesc%=KernelControl_Device, Root\KernelControl ; TODO: edit hw-id
+
+[KernelControl_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+KernelControl.sys
+
+;-------------- Service installation
+[KernelControl_Device.NT.Services]
+AddService = KernelControl,%SPSVCINST_ASSOCSERVICE%, KernelControl_Service_Inst
+
+; -------------- KernelControl driver install sections
+[KernelControl_Service_Inst]
+DisplayName    = %KernelControl.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\KernelControl.sys
+
+;
+;--- KernelControl_Device Coinstaller installation ------
+;
+
+[KernelControl_Device.NT.CoInstallers]
+AddReg=KernelControl_Device_CoInstaller_AddReg
+CopyFiles=KernelControl_Device_CoInstaller_CopyFiles
+
+[KernelControl_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[KernelControl_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[KernelControl_Device.NT.Wdf]
+KmdfService =  KernelControl, KernelControl_wdfsect
+[KernelControl_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "KernelControl Installation Disk"
+KernelControl.DeviceDesc = "KernelControl Device"
+KernelControl.SVCDESC = "KernelControl Service"
