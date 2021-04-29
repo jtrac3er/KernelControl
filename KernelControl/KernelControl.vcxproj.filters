@@ -20,6 +20,9 @@
     <Filter Include="Assembler">
       <UniqueIdentifier>{b63b04f3-b154-4d5d-b763-8f0bd7f083a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{4d873efc-d484-4574-830b-a4600dd29457}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="KernelControl.inf">
@@ -61,5 +64,10 @@
     <MASM Include="Assembler\TriggerTripleFault.asm">
       <Filter>Assembler</Filter>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Skripts\testIOCTL.py">
+      <Filter>Test</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -183,10 +183,21 @@
     <ClCompile Include="ThreadLog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="Assembler\ClearSMP.asm" />
-    <MASM Include="Assembler\ExecuteUsercodeAddress.asm" />
-    <MASM Include="Assembler\getThreadID.asm" />
-    <MASM Include="Assembler\TriggerTripleFault.asm" />
+    <MASM Include="Assembler\ClearSMP.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </MASM>
+    <MASM Include="Assembler\ExecuteUsercodeAddress.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </MASM>
+    <MASM Include="Assembler\getThreadID.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </MASM>
+    <MASM Include="Assembler\TriggerTripleFault.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Skripts\testIOCTL.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
