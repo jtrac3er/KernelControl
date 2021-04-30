@@ -18,9 +18,7 @@ INVALID_HANDLE_VALUE = HANDLE(-1).value
 DeviceType = DEVICE_UNKNOWN
 Access = FILE_ANY_ACCESS
 Method = METHOD_NEITHER
-
-TRIGGER_TRIPLE_FAULT = 0x800 
-EXECUTE_USERCODE_ADDRESS = 0x801			
+			
 DRIVERNAME = b"\\\\.\\KernelControl"
 
 VirtualProtect = windll.kernel32.VirtualProtect
@@ -48,12 +46,12 @@ hDevice = CreateFileA (
 )
 
 if hDevice == INVALID_HANDLE_VALUE:
-	print("Konnte Handle für '%s' nicht öffnen" % DRIVERNAME.decode("ascii"))
+	print("Konnte Handle fÃ¼r '%s' nicht Ã¶ffnen" % DRIVERNAME.decode("ascii"))
 	print("Errorcode: %i" % GetLastError())
 	input()
 	exit(1)
 else:
-	print("Handle für den Treiber geöffnet: %i" % hDevice)
+	print("Handle fÃ¼r den Treiber geÃ¶ffnet: %i" % hDevice)
 
 
 
@@ -63,7 +61,7 @@ def send2Driver(ControlCode, data, lData, output, lOutput):
 		hDevice,
 		ControlCode,		
 		data,	
-		lData,		# Grösse des Buffers
+		lData,		# GrÃ¶sse des Buffers
 		output,			
 		lOutput,			
 		byref(returnedBytes),
@@ -74,7 +72,7 @@ def send2Driver(ControlCode, data, lData, output, lOutput):
 
 
 
-""" Hier kommen alle unterstützen Funktionen rein """
+""" Hier kommen alle unterstÃ¼tzen Funktionen rein """
 
 IOCTL_TriggerTripleFault = 0
 IOCTL_ExecuteUsercodeAddress = 0
