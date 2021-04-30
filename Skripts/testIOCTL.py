@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*-
 #!python3.6
+# -*- coding: utf-8 -*-
+# Version sollte vor dem Encoding kommen
 
 from ctypes import *
 from ctypes.wintypes import *
@@ -49,7 +50,7 @@ if hDevice == INVALID_HANDLE_VALUE:
 	print("Konnte Handle für '%s' nicht öffnen" % DRIVERNAME.decode("ascii"))
 	print("Errorcode: %i" % GetLastError())
 	input()
-	exit(1)
+	#exit(1)
 else:
 	print("Handle für den Treiber geöffnet: %i" % hDevice)
 
@@ -81,14 +82,51 @@ IOCTL_ClearSMP = 0
 
 
 def TriggerTripleFault():
-    pass
+    send2Driver(IOCTL_TriggerTripleFault, None, 0, None, 0)
 
-def ExecuteUsercodeAddress():
-    pass
-
-def ThreadSleep():
-    pass
 
 def ClearSMP():
-    pass
+    send2Driver(IOCTL_ClearSMP, None, 0, None, 0)
 
+
+def ExecuteUsercodeAddress():
+
+    payload = b"\xC3"    # Einfacher Return
+    lpOldProt = cast(pointer((BYTE*100)()), c_void_p)
+
+    # Alloziiere Speicher und mache ihn ausführbar.
+    memory = c_char_p(payload)
+    status = VirtualProtect(memory, sizeof(memory), PAGE_EXECUTE_READWRITE, lpOldProt)
+    if not status:
+        print("Konnte Code nicht erstellen. Errorcode ist %i" % GetLastError())
+        exit(1)
+
+    # Sende das Ganze an den Treiber
+    result = send2Driver(IOCTL_ExecuteUsercodeAddress, memory, len(payload), None, 0)
+    if not result[0]:
+        print("Konnte Payload nicht an Treiber senden. Errorcode: %i" % GetLastError())
+        exit(1)
+
+
+def ThreadSleep(tu):
+        
+    time = DWORD(tu)
+    result = send2Driver(IOCTL_ThreadSleep, time, sizeof(DWORD), None, 0)
+    if not result[0]:
+        print("Konnte IOCTL nicht an Treiber senden: %i" % GetLastError())
+        exit(1)
+
+
+
+from sys import argv
+
+try:
+    arg = argv[1]
+    if arg == "-t": TriggerTripleFault()
+    elif arg == "-e": ExecuteUsercodeAddress()
+    elif arg == "-t": ThreadSleep(100)
+    elif arg == "-s": ClearSMP()
+    else: print("Invalide Option")
+except Exception as e:
+    print("Fehler aufgetreten")
+    print(e)
