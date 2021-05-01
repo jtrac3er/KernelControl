@@ -31,7 +31,7 @@ DeviceIoControl.argtypes = [HANDLE, DWORD, c_void_p, DWORD, c_void_p, DWORD, POI
 DeviceIoControl.restype = BOOL
 
 CreateFileA = windll.kernel32.CreateFileA
-CreateFileA.argtypes = [c_char_p, DWORD, DWORD, c_void_p, DWORD, DWORD, HANDLE]
+CreateFileA.argtypes = [c_void_p, DWORD, DWORD, c_void_p, DWORD, DWORD, HANDLE]
 CreateFileA.restype = HANDLE
 
 print("\nVersuche ein Handle zu erlangen...")
@@ -58,7 +58,7 @@ else:
 def IOCTL(func):
     # define CTL_CODE((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method)
     # define IOCTL(Function) CTL_CODE(FILE_DEVICE_UNKNOWN, Function, METHOD_NEITHER, FILE_ANY_ACCESS)
-    return ((0x22 << 16) | (0x0 << 14) | (func << 2) | (0x3))
+    return ((DEVICE_UNKNOWN << 16) | (FILE_ANY_ACCESS << 14) | (func << 2) | (METHOD_NEITHER))
 
 
 def send2Driver(ControlCode, data, lData, output, lOutput):
@@ -137,4 +137,3 @@ try:
 except Exception as e:
     print("Fehler aufgetreten")
     print(e)
-    raise(e)
