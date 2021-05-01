@@ -27,7 +27,7 @@ VirtualProtect.argtypes = [c_void_p, DWORD, DWORD, c_void_p]
 VirtualProtect.restype = BOOL
 
 DeviceIoControl = windll.kernel32.DeviceIoControl
-DeviceIoControl.argtypes = [HANDLE, DWORD, c_char_p, DWORD, c_char_p, DWORD, POINTER(WORD), c_void_p]
+DeviceIoControl.argtypes = [HANDLE, DWORD, c_void_p, DWORD, c_void_p, DWORD, POINTER(WORD), c_void_p]
 DeviceIoControl.restype = BOOL
 
 CreateFileA = windll.kernel32.CreateFileA
@@ -55,6 +55,11 @@ else:
 	print("Handle für den Treiber geöffnet: %i" % hDevice)
 
 
+def IOCTL(func):
+    # define CTL_CODE((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method)
+    # define IOCTL(Function) CTL_CODE(FILE_DEVICE_UNKNOWN, Function, METHOD_NEITHER, FILE_ANY_ACCESS)
+    return ((0x22 << 16) | (0x0 << 14) | (func << 2) | (0x3))
+
 
 def send2Driver(ControlCode, data, lData, output, lOutput):
 	returnedBytes = WORD()
@@ -75,10 +80,10 @@ def send2Driver(ControlCode, data, lData, output, lOutput):
 
 """ Hier kommen alle unterstützen Funktionen rein """
 
-IOCTL_TriggerTripleFault = 0
-IOCTL_ExecuteUsercodeAddress = 0
-IOCTL_ThreadSleep = 0
-IOCTL_ClearSMP = 0
+IOCTL_TriggerTripleFault = IOCTL(0x800)
+IOCTL_ExecuteUsercodeAddress = IOCTL(0x801)
+IOCTL_ThreadSleep = IOCTL(0x802)
+IOCTL_ClearSMP = IOCTL(0x803)
 
 
 def TriggerTripleFault():
@@ -103,7 +108,7 @@ def ExecuteUsercodeAddress():
 
     # Sende das Ganze an den Treiber
     # Achtung: Der Treiber erwartet einen Pointer für den Payload, nicht direkt den Payload 
-    result = send2Driver(IOCTL_ExecuteUsercodeAddress, byref(memory), len(POINTER), None, 0)
+    result = send2Driver(IOCTL_ExecuteUsercodeAddress, byref(memory), sizeof(c_char_p), None, 0)
     if not result[0]:
         print("Konnte Payload nicht an Treiber senden. Errorcode: %i" % GetLastError())
         exit(1)
@@ -112,7 +117,8 @@ def ExecuteUsercodeAddress():
 def ThreadSleep(tu):
         
     time = DWORD(tu)
-    result = send2Driver(IOCTL_ThreadSleep, time, sizeof(DWORD), None, 0)
+    # Dasselbe hier für die Zeiteinheiten 'time'. Pass-by-ref
+    result = send2Driver(IOCTL_ThreadSleep, byref(time), sizeof(DWORD), None, 0)
     if not result[0]:
         print("Konnte IOCTL nicht an Treiber senden: %i" % GetLastError())
         exit(1)
@@ -131,3 +137,4 @@ try:
 except Exception as e:
     print("Fehler aufgetreten")
     print(e)
+    raise(e)
