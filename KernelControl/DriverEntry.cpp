@@ -7,7 +7,6 @@
 #include "ThreadLog.h"
 
 
-extern "C"
 NTSTATUS
 DriverEntry(
 	_DRIVER_OBJECT* DriverObject,
@@ -57,6 +56,11 @@ DriverEntry(
 		}
 	}
 
+	// Wenn erfolgreich, dann muss das DeviceObject gespeichert werden
+	// Driverunload Funktion zuweisen
+	// Das DeviceObject wird automatisch in DriverObject->DeviceObject gespeichert
+	// Falls der Treiber weitere DeviceObjects hat, sind diese in einer LinkedList zusammengefasst
+
 	// Per Default mal alle Handler nicht supporten
 	for (int i = 0; i <= IRP_MJ_MAXIMUM_FUNCTION; i++)
 	{
@@ -67,10 +71,6 @@ DriverEntry(
 	DriverObject->MajorFunction[IRP_MJ_CREATE] = IrpCreateHandler;
 	DriverObject->MajorFunction[IRP_MJ_CLOSE] = IrpCloseHandler;
 	DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = IrpDeviceIoCtlHandler;
-
-
-	// Driverunload Funktion zuweisen
-	DriverObject->DriverUnload = DriverUnloadHandler;
 
 	// Namen für den DeviceTree erstellen
 	// Eigentlich ist diese Art veraltet. IoRegisterDeviceInterface wäre die neure Wahl
@@ -94,10 +94,20 @@ void DriverUnloadHandler (
 )
 {
 	// Hier muss man nichts machen, da kein Pool benutzt wird
+	// FALSCH: Das Device Object muss hier zerstört werden, sonst gibt es ein Problem,
+	// wenn der Treiber entladen wird. So kannm an z.B. den Treiber nicht starten, stoppen
+	// und dann erneut starten (C0000035 - STATUS_OBJECT_NAME_COLLISION) Error
 
 	DebugPrintInfo;
 
-	UNREFERENCED_PARAMETER(DriverObject);
+	// Hole das DeviceObject und zerstöre es
+	// Wenn es NULL ist, dann besser nicht und generiere eine Ausgabe
+
+	if (DriverObject->DeviceObject)
+		IoDeleteDevice(DriverObject->DeviceObject);
+	else
+		DebugPrint("[KernelControl] Konnte DeviceObject nicht löschen - NULL\n");
+
 	return;
 }
 
