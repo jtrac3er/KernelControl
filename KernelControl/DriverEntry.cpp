@@ -66,6 +66,9 @@ DriverEntry(
 	{
 		DriverObject->MajorFunction[i] = IgnoreIRPHandler;
 	}
+	
+	// Driver Unload Funktion hinzufügen
+	DriverObject->DriverUnload = DriverUnloadHandler;
 
 	// restliche Dispatchfunktionen zuweisen
 	DriverObject->MajorFunction[IRP_MJ_CREATE] = IrpCreateHandler;
