@@ -6,7 +6,7 @@
 #include "DriverFunctions.h"
 #include "ThreadLog.h"
 
-
+extern "C"
 NTSTATUS
 DriverEntry(
 	_DRIVER_OBJECT* DriverObject,
