@@ -129,7 +129,7 @@ from sys import argv
 
 try:
     arg = argv[1]
-    if arg == "-t": TriggerTripleFault()
+    if arg == "-3": TriggerTripleFault()
     elif arg == "-e": ExecuteUsercodeAddress()
     elif arg == "-t": ThreadSleep(100)
     elif arg == "-s": ClearSMP()
