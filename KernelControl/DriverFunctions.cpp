@@ -1,6 +1,7 @@
 
 #include <wdm.h>
 #include "DriverFunctions.h"
+#include "DriverEntry.h"
 
 
 // Definitionen von der Headerdatei
@@ -28,4 +29,10 @@ void ThreadSleep(int ms)
 	largeInt.LowPart = ms;
 
 	KeDelayExecutionThread(KernelMode, FALSE, &largeInt);
+}
+
+
+void __inline NOP()
+{
+	DebugPrint("[KernelControl] NOP ausgeführt");
 }

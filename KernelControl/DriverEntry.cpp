@@ -1,6 +1,9 @@
 
 #define FUNC_ONLY
 
+//#define ENABLE_LOG
+#undef ENABLE_LOG
+
 #include <wdm.h>
 #include "DriverEntry.h"
 #include "DriverFunctions.h"
@@ -80,9 +83,11 @@ DriverEntry(
 	// Über den DosDeviceName kann man den Treiber öffnen, der DeviceName ist eher für interne Zwecke
 	IoCreateSymbolicLink(&DosDeviceName, &DeviceName);
 
+#ifdef ENABLE_LOG
 	DebugPrint("[KernelControl] Initialisiere Thread Liste\n");
 	ThreadLogInit();
-	
+#endif
+
 	// Funktionniert leider nicht richtig
 	//DebugPrint("[KernelControl] Der DeviceName ist %s\n", DOSDEVICENAME);
 	DebugPrint("[KernelControl] Der Treiber ist nun geladen\n");
@@ -200,8 +205,10 @@ IrpDeviceIoCtlHandler(
 
 	DebugPrintInfo;
 
+#ifdef ENABLE_LOG
 	// Für das Thread Log muss hier noch aufzeichnung kommen
 	threadEnter();
+#endif
 
 	IrpSp = IoGetCurrentIrpStackLocation(Irp);
 	IoControlCode = IrpSp->Parameters.DeviceIoControl.IoControlCode;
@@ -214,7 +221,6 @@ IrpDeviceIoCtlHandler(
 		DebugPrint("[KernelControl] ControlCode: TRIGGER_TRIPLE_FAULT_CODE\n");
 
 		TriggerTripleFault();
-		Status = STATUS_SUCCESS;
 		break;
 
 	case EXECUTE_USERCODE_ADDRESS:
@@ -264,7 +270,6 @@ IrpDeviceIoCtlHandler(
 		DebugPrint("[KernelControl] Springe zur Addresse %p\n", address);
 
 		ExecuteUsercodeAddress(address);
-		Status = STATUS_SUCCESS;
 		break;
 
 	case THREAD_SLEEP:
@@ -278,6 +283,7 @@ IrpDeviceIoCtlHandler(
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)
 		{
+			Status = STATUS_UNSUCCESSFUL;
 			break;
 		}
 
@@ -303,8 +309,29 @@ IrpDeviceIoCtlHandler(
 		break;
 	}
 
+#ifdef ENABLE_LOG
 	// Hier ist der Thread dann fertig
 	threadLeave();
+#endif
 
-	return Status;
+
+	// Hier ist aber noch nicht fertig: Die IRP-Request muss auch noch beendet werden!
+	// Sonst weiss der IO-Manager nicht, ob die IRP schon fertig geworden ist (Nur weil der 
+	// Thread returnt, muss es ja nicht heissen, dass die IRP schon fertig ist). Alle IRP 
+	// Handler müssen dies tun, auch DeviceIoctlHandler.
+
+	/*
+	To complete an IRP, a dispatch routine must perform all of the following steps:
+
+	Set Irp->IoStatus.Status to an appropriate NTSTATUS value.
+
+	Call IoCompleteRequest to return the IRP to the I/O Manager.
+
+	Return the same status value as in step 1 to the caller.
+	*/
+
+	Irp->IoStatus.Status = Status;				// Setzte IRP Status als Success oder eben nicht
+	IoCompleteRequest(Irp, IO_NO_INCREMENT);	// schliesse IRP ab
+
+	return Status;		// Gleichen Status zurückgeben
 }
