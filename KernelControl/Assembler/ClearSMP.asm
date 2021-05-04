@@ -20,7 +20,7 @@ ClearSMP:
 	je SMP_ALREADY_DISABLED
 	mov cr4, rax		; Neuen Wert schreiben
 	xor rax, rax		; NASM spinnt hier glaub: Es nimmt untern EAX statt RAX
-	mov rax, 1			; Setzte Return = TRUE = 1
+	inc rax				; Setzte Return = TRUE = 1
 	ret
 
 	SMP_ALREADY_DISABLED:
