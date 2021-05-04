@@ -50,6 +50,7 @@
 #define EXECUTE_USERCODE_ADDRESS		IOCTL(0x801)
 #define THREAD_SLEEP					IOCTL(0x802)
 #define CLEAR_SMP						IOCTL(0x803)
+#define NOP_FUNC						IOCTL(0x804)
 
 
 

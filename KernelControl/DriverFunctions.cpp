@@ -32,7 +32,7 @@ void ThreadSleep(int ms)
 }
 
 
-void __inline NOP()
+void NOP()
 {
 	DebugPrint("[KernelControl] NOP ausgeführt");
 }

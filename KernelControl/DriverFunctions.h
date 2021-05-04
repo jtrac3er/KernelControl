@@ -37,6 +37,6 @@ extern "C" bool ClearSMP();
 
 // Diese Funktion soll einfach gar nichts machen ausser einen DebugPrint zu machen
 // So kann besser analysiert werden, wieso der Treiber immer stecken bleibt
-// -- Funktionniert das Inlinen von Funktionen hier oder nicht?
+// -- Funktionniert das Inlinen von Funktionen hier oder nicht? -- Nein
 
-void __inline NOP();
+void NOP();

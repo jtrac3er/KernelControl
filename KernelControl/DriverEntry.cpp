@@ -294,6 +294,8 @@ IrpDeviceIoCtlHandler(
 	case CLEAR_SMP:
 	{
 		DebugPrint("[KernelControl] ControlCode: CLEAR_SMP\n");
+
+		// Klammern bei case nur wegen result-scope lokalität
 		bool result = ClearSMP();
 
 		if (result)
@@ -303,6 +305,10 @@ IrpDeviceIoCtlHandler(
 
 		break;
 	}
+
+	case NOP_FUNC:
+		NOP();
+		break;
 
 	default:
 		Status = STATUS_NOT_SUPPORTED;
