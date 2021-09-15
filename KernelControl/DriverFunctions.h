@@ -40,3 +40,4 @@ extern "C" bool ClearSMP();
 // -- Funktionniert das Inlinen von Funktionen hier oder nicht? -- Nein
 
 void NOP();
+

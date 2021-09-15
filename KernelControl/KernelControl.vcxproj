@@ -175,11 +175,13 @@
   <ItemGroup>
     <ClInclude Include="DriverEntry.h" />
     <ClInclude Include="DriverFunctions.h" />
+    <ClInclude Include="SyscallHook.h" />
     <ClInclude Include="ThreadLog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriverEntry.cpp" />
     <ClCompile Include="DriverFunctions.cpp" />
+    <ClCompile Include="SyscallHook.cpp" />
     <ClCompile Include="ThreadLog.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +194,7 @@
     <MASM Include="Assembler\getThreadID.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </MASM>
+    <MASM Include="Assembler\SyscallHook.asm" />
     <MASM Include="Assembler\TriggerTripleFault.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </MASM>

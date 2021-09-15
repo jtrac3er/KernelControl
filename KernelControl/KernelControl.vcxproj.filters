@@ -39,6 +39,9 @@
     <ClInclude Include="ThreadLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SyscallHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DriverEntry.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ThreadLog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SyscallHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,6 +68,9 @@
       <Filter>Assembler</Filter>
     </MASM>
     <MASM Include="Assembler\TriggerTripleFault.asm">
+      <Filter>Assembler</Filter>
+    </MASM>
+    <MASM Include="Assembler\SyscallHook.asm">
       <Filter>Assembler</Filter>
     </MASM>
   </ItemGroup>
